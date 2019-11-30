@@ -6,7 +6,7 @@ export const GeolocProvider = props => {
     const [position, setPosition] = useState(null);
     const [datas, setDatas] = useState(null);
     _storeData = async () => {
-        fetch('https://opendata.paris.fr/api/records/1.0/search/?dataset=velib-disponibilite-en-temps-reel&geofilter.distance=' + position.latitude + '%2C' + position.longitude + '%2C' + 1000)
+        await fetch('https://opendata.paris.fr/api/records/1.0/search/?dataset=velib-disponibilite-en-temps-reel&geofilter.distance=' + position.latitude + '%2C' + position.longitude + '%2C' + 1000)
             .then((response) => response.json())
             .then((responseJson) => {
                 if (responseJson.errorcode != 10005) {
@@ -22,12 +22,21 @@ export const GeolocProvider = props => {
                 setDatas(JSON.parse(value));
             }),
         );
+
+    };
+    default_favorite = async () => {
+        datas.map(item => {
+            if (AsyncStorage.getItem(item.recordid) == null){
+                AsyncStorage.setItem(item.recordid, 'false')
+                console.log(AsyncStorage.getItem(item.recordid))
+            }
+        })
     };
     _getPosition = async () => {
         await navigator.geolocation.getCurrentPosition(info => {
                 setPosition(info.coords);
                 if (datas == null) {
-                    this._storeData();
+                    this._storeData()
                 }
             },
         );

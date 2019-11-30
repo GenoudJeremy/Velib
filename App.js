@@ -1,19 +1,43 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import {createBottomTabNavigator} from "react-navigation-tabs";
+import {createAppContainer} from "react-navigation";
+
 import {GeolocProvider } from './Geoloc'
 import Localisation from "./Localisation";
+import  List  from './List'
+import Default_Screen from "./defaultScreen";
+import {Root} from "./NavList";
 
-class App extends React.Component {
-
+class defaultScreen extends React.Component{
+  render(){
+    return ( <Default_Screen/>)
+  }
+}
+class RootScreen extends React.Component{
   render(){
     return (
         <GeolocProvider>
+          <Root/>
+        </GeolocProvider>)
+  }
+}
+class MapsScreen extends React.Component{
+  render(){
+    return(
+        <GeolocProvider>
           <Localisation/>
         </GeolocProvider>
-    );
+    )
   }
-
 }
+const TabNavigator = createBottomTabNavigator({
+  defaultScreen: {screen: defaultScreen},
+  Liste: {screen: RootScreen},
+  Carte: {screen: MapsScreen},
+});
+export default createAppContainer(TabNavigator)
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -22,5 +46,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
-export default App
