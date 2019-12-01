@@ -6,7 +6,8 @@ import MapView from "react-native-maps";
 export default () => {
     const position = useContext(GeolocContext)
     const pos = position.position;
-    const datas = position.datas
+    const datas = position.datas;
+    const fav = position.fav;
 
     if (pos != null && datas != null){
         return (

@@ -1,10 +1,10 @@
 import {useNavigationParam} from "react-navigation-hooks";
-import {View, Text, Dimensions} from 'react-native';
+import {View, Text, Dimensions, Button, AsyncStorage} from 'react-native';
 import MapView, {Marker} from "react-native-maps";
 import React from "react";
 
 export default Detailvelib = () => {
-    const station = useNavigationParam('info')
+    const station = useNavigationParam('info');
     console.log(station)
     return (
         <View>

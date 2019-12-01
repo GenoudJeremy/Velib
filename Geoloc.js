@@ -5,6 +5,7 @@ export const GeolocContext = createContext('');
 export const GeolocProvider = props => {
     const [position, setPosition] = useState(null);
     const [datas, setDatas] = useState(null);
+    const [fav, setFav] = useState(null)
     _storeData = async () => {
         await fetch('https://opendata.paris.fr/api/records/1.0/search/?dataset=velib-disponibilite-en-temps-reel&geofilter.distance=' + position.latitude + '%2C' + position.longitude + '%2C' + 1000)
             .then((response) => response.json())
@@ -12,9 +13,11 @@ export const GeolocProvider = props => {
                 if (responseJson.errorcode != 10005) {
                     AsyncStorage.setItem('VelibData', JSON.stringify(responseJson.records));
                     setDatas(responseJson.records);
+                    this.default_favorite(responseJson.records)
                 } else {
                     AsyncStorage.getItem('VelibData').then((value) => {
                         setDatas(JSON.parse(value));
+                        this.default_favorite(JSON.parse(value));
                     })
                 }
             }).catch(
@@ -24,19 +27,23 @@ export const GeolocProvider = props => {
         );
 
     };
-    default_favorite = async () => {
-        datas.map(item => {
-            if (AsyncStorage.getItem(item.recordid) == null){
+    default_favorite = async (data) => {
+        let favoris = []
+        data.map(item => {
+            if (AsyncStorage.getItem(item.recordid) === 'false' || AsyncStorage.getItem(item.recordid) === 'true'){
+
+            } else {
                 AsyncStorage.setItem(item.recordid, 'false')
-                console.log(AsyncStorage.getItem(item.recordid))
             }
-        })
+            favoris.push([item.recordid, AsyncStorage.getItem(item.recordid)])
+        });
+        setFav(favoris)
     };
     _getPosition = async () => {
         await navigator.geolocation.getCurrentPosition(info => {
                 setPosition(info.coords);
                 if (datas == null) {
-                    this._storeData()
+                    this._storeData();
                 }
             },
         );
@@ -45,6 +52,6 @@ export const GeolocProvider = props => {
         this._getPosition()
     }, [position]);
     return <GeolocContext.Provider
-        value={{position, setPosition, datas, setDatas}}>{props.children}</GeolocContext.Provider>
+        value={{position, setPosition, datas, setDatas, fav, setFav}}>{props.children}</GeolocContext.Provider>
 };
 
